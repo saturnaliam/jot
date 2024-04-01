@@ -45,7 +45,7 @@ const parse_args = (): [Flags, string][] => {
       if (needs_arg) {
         current_arg[1] = arg;
         needs_arg = false;
-        parsed.push(current_arg);
+        parsed.push([current_arg[0], current_arg[1]]);
       } else {
         send_error(Error.unknown_arg, arg);
       }
@@ -58,4 +58,27 @@ const parse_args = (): [Flags, string][] => {
   return parsed;
 }
 
-console.log(parse_args());
+const run = (args: [Flags, string][]) => {
+  let category = "";
+  let output = "";
+
+  for (const arg of args) {
+    if (arg[0] == Flags.help) {
+      // print help
+    } else if (arg[0] == Flags.category) {
+      if (category === "") {
+        category = arg[1];
+      } else {
+        // send error
+      }
+    } else if (arg[0] == Flags.note) {
+      if (category !== "") output += `# ${category}\n`
+      output += arg[1] + "\n";
+    }
+  }
+
+  Deno.writeTextFileSync("notes.md", output, { append: true });
+}
+
+const parsed = parse_args();
+run(parsed);
