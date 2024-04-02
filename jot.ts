@@ -1,4 +1,3 @@
-#!/usr/bin/env -S deno run --allow-write
 enum Flags {
   help,
   category,
