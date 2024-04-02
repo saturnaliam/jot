@@ -8,6 +8,7 @@ enum Flags {
 enum Error {
   no_arg,
   unknown_arg,
+  too_many_categories,
 }
 
 const send_error = (error: Error, extra: string) => {
@@ -18,6 +19,8 @@ const send_error = (error: Error, extra: string) => {
     if (extra == "1") extra = "category";
     if (extra == "2") extra = "note";
     console.error(`error: ${extra} expects 1 argument, but none were given.`);
+  } else if (error == Error.too_many_categories) {
+    console.error(`error: Too many categories provided, only one is supported.`);
   }
 
   Deno.exit(1);
@@ -64,12 +67,12 @@ const run = (args: [Flags, string][]) => {
 
   for (const arg of args) {
     if (arg[0] == Flags.help) {
-      // print help
+      console.log("usage: jot [OPTIONS]\njot notes to a file\n  -c --category    defines a category for the note\n  -n --note        defines the note to jot down\n  -h --help        displays this help menu");
     } else if (arg[0] == Flags.category) {
       if (category === "") {
         category = arg[1];
       } else {
-        // send error
+        send_error(Error.too_many_categories, "");
       }
     } else if (arg[0] == Flags.note) {
       if (category !== "") output += `# ${category}\n`
@@ -77,7 +80,8 @@ const run = (args: [Flags, string][]) => {
     }
   }
 
-  Deno.writeTextFileSync("notes.md", output, { append: true });
+//  Deno.writeTextFileSync("notes.md", output, { append: true });
+  console.log(output);
 }
 
 const parsed = parse_args();
